@@ -103,7 +103,28 @@ def bisection(
             - Liczba wykonanych iteracji.
         Jeżeli dane wejściowe są niepoprawne funkcja zwraca `None`.
     """
-    pass
+    if not isinstance(a,(int,float)) or not isinstance(b,(int,float)) or not isinstance(epsilon,float) or not isinstance(max_iter,int):
+        return None
+    if f(a)==0: 
+        return(a)
+    if f(b)==0:
+        return(b)
+    if f(a)*f(b)>0:
+        return None
+    
+    iteracje:int = 0
+
+    while np.abs(b-a)> epsilon or iteracje <= max_iter:
+        c=(a+b)/2
+        if f(c)==0:
+            return c
+        elif f(c)*f(b)<0:
+            a=c
+        else:
+            b=c
+        iteracja+=1
+
+    return((a+b)/2), iteracje
 
 
 def secant(
@@ -130,7 +151,23 @@ def secant(
             - Liczba wykonanych iteracji.
         Jeżeli dane wejściowe są niepoprawne funkcja zwraca `None`.
     """
-    pass
+    if not isinstance(a,(int,float)) or not isinstance(b,(int,float)) or not isinstance(epsilon,float) or not isinstance(max_iters,int):
+        return None
+    if f(a)==0: 
+        return(a)
+    if f(b)==0:
+        return(b)
+    if f(a)*f(b)>0:
+        return None
+    
+    iteracje:int = 0
+
+    while np.abs(b-a)> epsilon or iteracje <= max_iters:
+        sieczna = np.polyfit(a,b,1)
+
+        iteracja+=1
+
+    return((a+b)/2), iteracje
 
 
 def difference_quotient(
