@@ -105,26 +105,29 @@ def bisection(
     """
     if not isinstance(a,(int,float)) or not isinstance(b,(int,float)) or not isinstance(epsilon,float) or not isinstance(max_iter,int):
         return None
-    if f(a)==0: 
-        return(a)
-    if f(b)==0:
-        return(b)
+    
+    iteracje = 0
+
+    if np.abs(f(a))< epsilon: 
+        return a, iteracje
+    if np.abs(f(b))< epsilon:
+        return b, iteracje
     if f(a)*f(b)>0:
         return None
-    
-    iteracje:int = 0
 
-    while np.abs(b-a)> epsilon or iteracje <= max_iter:
+    while np.abs(b-a)> epsilon and iteracje <= max_iter:
+        
+        iteracje+=1
         c=(a+b)/2
-        if f(c)==0:
-            return c
+        if np.abs(f(c))< epsilon:
+            return c, iteracje
         elif f(c)*f(b)<0:
             a=c
         else:
             b=c
-        iteracja+=1
 
-    return((a+b)/2), iteracje
+
+    return ((a+b)/2), iteracje
 
 
 def secant(
@@ -153,21 +156,36 @@ def secant(
     """
     if not isinstance(a,(int,float)) or not isinstance(b,(int,float)) or not isinstance(epsilon,float) or not isinstance(max_iters,int):
         return None
-    if f(a)==0: 
-        return(a)
-    if f(b)==0:
-        return(b)
+    
+    iteracje = 0
+
+    
+    if np.abs(f(a))<epsilon: 
+        return a, iteracje
+    if np.abs(f(b))<epsilon:
+        return b, iteracje
     if f(a)*f(b)>0:
         return None
-    
-    iteracje:int = 0
 
-    while np.abs(b-a)> epsilon or iteracje <= max_iters:
-        sieczna = np.polyfit(a,b,1)
+    while iteracje < max_iters:
+        iteracje+=1
 
-        iteracja+=1
+        fa=f(a)
+        fb=f(b)
 
-    return((a+b)/2), iteracje
+        c = b - fb*((b-a)/(fb-fa))
+
+        fc = f(c)
+
+        if np.abs(fc)<epsilon or abs(c-b)<epsilon:
+            return c,iteracje
+        
+        if fa * fc < 0:
+            b = c
+        else:
+            a = c
+
+    return c, iteracje
 
 
 def difference_quotient(
@@ -187,7 +205,10 @@ def difference_quotient(
         (float): Wartość ilorazu różnicowego.
         Jeżeli dane wejściowe są niepoprawne funkcja zwraca `None`.
     """
-    pass
+    if not isinstance(x,(int,float)) or not isinstance(h,(int,float)):
+        return None
+    
+    return (f(x+h)-f(x))/h
 
 
 def newton(
@@ -219,4 +240,34 @@ def newton(
             - Liczba wykonanych iteracji.
         Jeżeli dane wejściowe są niepoprawne funkcja zwraca `None`.
     """
-    pass
+    if not isinstance(a,(int,float)) or not isinstance(b,(int,float)) or not isinstance(epsilon,float) or not isinstance(max_iter,int):
+        return None
+    
+    iteracje = 0
+
+    
+    if np.abs(f(a))<epsilon: 
+        return a, iteracje
+    if np.abs(f(b))<epsilon:
+        return b, iteracje
+    if f(a)*f(b)>0:
+        return None
+    
+    if f(a)*ddf(a)>0:
+        x0=a
+    elif f(b)*ddf(b)>0:
+        x0=b
+    else: 
+        x0=(a+b)/2
+
+
+    while iteracje < max_iter:
+        iteracje+=1
+        x1 = x0 - f(x0)/df(x0)
+
+        if f(x1)<epsilon or np.abs(x1-x0)<epsilon:
+            return x1,iteracje
+
+        x0=x1
+        
+    return x1, iteracje
